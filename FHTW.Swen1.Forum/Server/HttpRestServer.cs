@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace FHTW.Swen1.Forum.Server;
+
+using System;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace FHTW.Swen1.Forum.Server;
 
 
 public sealed class HttpRestServer
@@ -55,7 +53,5 @@ public sealed class HttpRestServer
                 }
             }).ConfigureAwait(true);
         }
-        
-
     }
 }

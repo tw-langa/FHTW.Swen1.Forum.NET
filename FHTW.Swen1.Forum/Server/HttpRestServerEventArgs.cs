@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace FHTW.Swen1.Forum.Server;
+
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 
-namespace FHTW.Swen1.Forum.Server;
 
 
 public class HttpRestServerEventArgs: EventArgs
@@ -55,6 +51,11 @@ public class HttpRestServerEventArgs: EventArgs
         get; set;
     } = false;
 
+
+    public void Respond(HttpStatusCode statusCode, JsonObject? content = null)
+    {
+        Respond((int) statusCode, content);
+    }
 
     public void Respond(int statusCode, JsonObject? content = null)
     {
