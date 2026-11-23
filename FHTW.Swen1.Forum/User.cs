@@ -2,10 +2,17 @@
 
 
 
-public sealed class User
+public sealed class User: Atom<User>, IAtom, _IAtom, _IAuthenticable
 {
     internal User()
     {}
+
+
+    protected override object _ObjectID
+    {
+        get { return UserName; }
+        set { UserName = (string) value; }
+    }
 
 
     public required string UserName
@@ -25,11 +32,15 @@ public sealed class User
         get; set;
     }
 
-
     public void SetPassword(string password)
-    {}
+    {
+        // TODO: Implement password hashing and salting
+    }
 
 
-    public void Save()
-    {}
+    public string PasswordHash
+    {
+        get { throw new NotImplementedException(); }        // TODO: Implement password hashing and storage
+        set { throw new NotImplementedException(); }
+    }
 }
