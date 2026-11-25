@@ -29,18 +29,21 @@ public abstract class Atom<T>: IAtom, _IAtom where T: class, IAtom, new()
     public virtual void Delete()
     {
         _Repository.Delete((T)(object) this, _EditingSession);
+        _EditingSession = null;
     }
 
 
     public void Refresh()
     {
-        _Repository.Refresh((T)(object) this, _EditingSession);
+        _Repository.Refresh(((T)(object) this), _EditingSession);
+        _EditingSession = null;
     }
 
 
     public void Save()
     {
         _Repository.Save((T)(object) this, _EditingSession);
+        _EditingSession = null;
     }
 
 

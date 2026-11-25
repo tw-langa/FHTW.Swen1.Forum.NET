@@ -4,7 +4,7 @@
 
 public sealed class User: Atom<User>, IAtom, _IAtom, _IAuthenticable
 {
-    internal User()
+    public User()
     {}
 
 
@@ -15,22 +15,29 @@ public sealed class User: Atom<User>, IAtom, _IAtom, _IAuthenticable
     }
 
 
-    public required string UserName
+    public string UserName
     {
         get; set;
-    }
+    } = string.Empty;
 
 
-    public required string FullName
+    public string FullName
     {
         get; set;
-    }
+    } = string.Empty;
 
 
-    public required string EMail
+    public string EMail
     {
         get; set;
-    }
+    } = string.Empty;
+
+
+    public bool IsAdmin
+    {
+        get; set;
+    } = false;
+
 
     public void SetPassword(string password)
     {

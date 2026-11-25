@@ -16,31 +16,64 @@ public abstract class Repository<T>: IRepository<T> where T: class, IAtom, new()
     }
 
 
-    protected virtual T _CreateObject(IDataReader re)
-    {
-        T rval = new();
-        ((_IAtom) rval).ObjectID = re.GetInt32(0);
-        
-        return _RefreshObject(rval, re);
-    }
-
-
     public static IRepository<Z> For<Z>() where Z: class, IAtom, new()
     {
         return null!;               // TODO: get specific repositories.
     }
 
 
-    protected abstract T _RefreshObject(T obj, IDataReader re);
+    protected virtual string _Pk
+    {
+        get { return "ID"; }
+    }
+
+    protected abstract string _TableName { get; }
+
+    protected abstract T _Refresh(T obj, IDataReader re);
 
 
-    public abstract T? Get(object id, Session? session = null);
+    public virtual T? Get(object id, Session? session = null)
+    {
+        using IDbConnection cn = _GetConnection();
+        using IDbCommand cmd = cn.CreateCommand($"SELECT * FROM {_TableName} WHERE {_Pk} = :pk");
+        using IDataReader re = cmd.WithParam(":pk", id).ExecuteReader();
 
-    public abstract IEnumerable<T> GetAll(Session? session = null);
+        if(re.Read())
+        {
+            return _Refresh(new T(), re);
+        }
+        return null;
+    }
 
-    public abstract void Refresh(T obj, Session? session = null);
+    public virtual IEnumerable<T> GetAll(Session? session = null)
+    {
+        using IDbConnection cn = _GetConnection();
+        using IDbCommand cmd = cn.CreateCommand($"SELECT * FROM {_TableName}");
+        using IDataReader re = cmd.ExecuteReader();
+
+        List<T> rval = new();
+        while(re.Read())
+        {
+            rval.Add(_Refresh(new T(), re));
+        }
+        return rval;
+    }
+
+    public virtual void Refresh(T obj, Session? session = null)
+    {
+        using IDbConnection cn = _GetConnection();
+        using IDbCommand cmd = cn.CreateCommand($"SELECT * FROM {_TableName} WHERE {_Pk} = :pk");
+        using IDataReader re = cmd.WithParam(":pk", ((_IAtom) obj).ObjectID).ExecuteReader();
+                
+        if(re.Read()) { _Refresh(obj, re);  }
+    }
 
     public abstract void Save(T obj, Session? session = null);
 
-    public abstract void Delete(T obj, Session? session = null);
+    public virtual void Delete(T obj, Session? session = null)
+    {
+        using IDbConnection cn = _GetConnection();
+        using IDbCommand cmd = cn.CreateCommand($"DELETE FROM {_TableName} WHERE {_Pk} = :pk");
+        cmd.WithParam(":pk", ((_IAtom) obj).ObjectID).ExecuteNonQuery();
+    }
 }
